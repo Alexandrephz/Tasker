@@ -4,6 +4,7 @@ import com.alexandrephz.todolist.DTO.ApiResponseDto;
 import com.alexandrephz.todolist.DTO.ApiResponseStatus;
 import com.alexandrephz.todolist.DTO.TaskRegistrationDto;
 import com.alexandrephz.todolist.DTO.TaskUpdateDto;
+import com.alexandrephz.todolist.exceptions.GroupNotFoundException;
 import com.alexandrephz.todolist.exceptions.TaskAlreadyExistsException;
 import com.alexandrephz.todolist.exceptions.TaskNotFoundException;
 import com.alexandrephz.todolist.exceptions.TaskServiceLogicException;
@@ -37,24 +38,24 @@ public class TaskServiceImpl implements TaskService{
 
 
     @Override
-    public ResponseEntity<ApiResponseDto<?>> createTask(TaskRegistrationDto createTask)
+    public ResponseEntity<ApiResponseDto<?>> createTask(TaskRegistrationDto taskRegistrationDto)
             throws TaskAlreadyExistsException, TaskServiceLogicException {
         try {
-            if (taskRepository.findByTaskTitle(createTask.getTaskTitle()) != null) {
-                throw new TaskAlreadyExistsException("The task creation has failed: Already exists a task with same name" + createTask.getTaskTitle());
+            if (taskRepository.findByTaskTitle(taskRegistrationDto.getTaskTitle()) != null) {
+                throw new TaskAlreadyExistsException("The task creation has failed: Already exists a task with same name" + taskRegistrationDto.getTaskTitle());
             }
-            // Assuming you have a method to find the group by ID
-            Optional<Group> optionalGroup = groupRepository.findById(createTask.getGroupId());
-            if (optionalGroup.isEmpty()) {
-                throw new TaskServiceLogicException("The specified group does not exist.");
+            try {
+                Group group = groupRepository.getReferenceById(taskRegistrationDto.getGroupId());
+                Task newTask = new Task(taskRegistrationDto.getTaskTitle(), taskRegistrationDto.getTaskDescription(), taskRegistrationDto.getTaskEnd(), TaskStatus.CREATED, group);
+                taskRepository.save(newTask);
+
+                return ResponseEntity
+                        .status(HttpStatus.CREATED)
+                        .body(new ApiResponseDto<>(ApiResponseStatus.SUCCESS.name(),"Tarefa criada com sucesso " + newTask.getId()));
+            } catch (Exception e) {
+                throw new GroupNotFoundException(e.getMessage());
             }
 
-            Task newTask = new Task(createTask.getTaskTitle(), createTask.getTaskDescription(), createTask.getTaskEnd(), TaskStatus.CREATED, optionalGroup.get());
-            taskRepository.save(newTask);
-
-            return ResponseEntity
-                    .status(HttpStatus.CREATED)
-                    .body(new ApiResponseDto<>(ApiResponseStatus.SUCCESS.name(),"Tarefa criada com sucesso " + newTask));
 
         } catch (TaskAlreadyExistsException e) {
             throw new TaskAlreadyExistsException(e.getMessage());

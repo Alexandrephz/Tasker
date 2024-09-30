@@ -48,7 +48,12 @@ public class Task {
     @OneToMany(mappedBy = "task")
     private Set<Comment> comments;
 
-    @OneToOne
+    @OneToMany(mappedBy = "task")
+    private Set<CloseRequest> closeRequests;
+
+    @ManyToOne
+    @JoinColumn(name = "group_id")
+
     private Group group;
 
 

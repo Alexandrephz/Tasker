@@ -32,6 +32,7 @@ public class SpringSecurity {
                 .requestMatchers("/user/*").permitAll()
                 .requestMatchers("/group/*").permitAll()
                 .requestMatchers("/tasks/*").permitAll()
+                .requestMatchers("/request/*").permitAll()
                 .anyRequest().authenticated()
         )
                 .httpBasic(Customizer.withDefaults())

@@ -25,7 +25,8 @@ public class TaskController {
     }
 
     @PostMapping("/tasks/new")
-    public ResponseEntity<ApiResponseDto<?>> createTask(@RequestBody TaskRegistrationDto taskRegistrationDto) throws TaskAlreadyExistsException, TaskServiceLogicException {
+    public ResponseEntity<ApiResponseDto<?>> createTask(@RequestBody TaskRegistrationDto taskRegistrationDto)
+            throws TaskAlreadyExistsException, TaskServiceLogicException {
         return taskService.createTask(taskRegistrationDto);
     }
 

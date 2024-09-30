@@ -25,6 +25,8 @@ public class CloseRequest {
 
     private String closeRequestDescription;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "closeRequestStatus", nullable = false)
     private CloseRequestStatus closeRequestStatus;
 
     @CreationTimestamp
@@ -33,7 +35,14 @@ public class CloseRequest {
     @UpdateTimestamp
     private Date updated_at;
 
-    @OneToOne
+    @ManyToOne
+    @JoinColumn(name="task_id", nullable = false)
     private Task task;
 
+
+    public CloseRequest(String closeDescription, CloseRequestStatus closeRequestStatus, Task task) {
+        this.closeRequestDescription = closeDescription;
+        this.closeRequestStatus = closeRequestStatus;
+        this.task = task;
+    }
 }

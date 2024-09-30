@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.UUID;
 import java.util.Set;
 
@@ -50,9 +51,8 @@ public class Group {
     )
     private Set<User> members = new HashSet<>();
 
-    @ManyToOne
-    @JoinColumn(name="group_id", nullable = true)
-    private Group group;
+    @OneToMany(mappedBy = "group")
+    private Set<Task> tasks;
 
     public Group(String groupName, String groupDescription) {
         this.groupName = groupName;
