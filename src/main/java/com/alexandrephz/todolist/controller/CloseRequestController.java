@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
+@RequestMapping("/api")
 public class CloseRequestController {
     @Autowired
     public CloseRequestService closeRequestService;
