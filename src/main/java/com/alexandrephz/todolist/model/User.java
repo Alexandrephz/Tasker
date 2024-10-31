@@ -1,6 +1,5 @@
 package com.alexandrephz.todolist.model;
 
-import com.alexandrephz.todolist.DTO.UserRegistrationDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,10 +10,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 @Data
@@ -45,8 +41,19 @@ public class User implements UserDetails {
     @UpdateTimestamp
     private Date updated_at;
 
-    @Enumerated(EnumType.STRING)
-    private UserRole userRole;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+
+    private Set<Role> roles = new HashSet<>();
+
+    public User(String username, String email, String encode, String fullName) {
+        this.fullName = fullName;
+        this.username = username;
+        this.email = email;
+        this.password = encode;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -78,11 +85,4 @@ public class User implements UserDetails {
         return true;
     }
 
-    public User(String username, String fullName, String password, String email, UserRole userRole) {
-        this.username = username;
-        this.fullName = fullName;
-        this.password = password;
-        this.email = email;
-        this.userRole = userRole; // Corrected here
-    }
 }

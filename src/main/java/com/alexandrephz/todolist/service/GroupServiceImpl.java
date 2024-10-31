@@ -25,7 +25,7 @@ import java.util.Set;
 
 @Component
 @Slf4j
-public class GroupServiceImpl implements GroupService{
+public class GroupServiceImpl implements GroupService {
     @Autowired
     private GroupRepository groupRepository;
 
@@ -35,10 +35,10 @@ public class GroupServiceImpl implements GroupService{
     @Override
     public ResponseEntity<ApiResponseDto<?>> createGroup(GroupRegistrationDto groupRegistrationDto) throws GroupAlreadyExistsException, GroupServiceLogicException {
         try {
-            if (groupRegistrationDto.getUserRole() != UserRole.ADMIN){
+            if (groupRegistrationDto.getUserRole() != UserRole.ADMIN) {
                 throw new GroupServiceLogicException("Voce não tem permissão.");
             }
-            if (groupRepository.findByGroupName(groupRegistrationDto.getGroupName()) != null){
+            if (groupRepository.findByGroupName(groupRegistrationDto.getGroupName()) != null) {
                 throw new GroupAlreadyExistsException("O nome do grupo ja existe.");
             }
             Group group = new Group(groupRegistrationDto.getGroupName(), groupRegistrationDto.getGroupDescription());
@@ -46,7 +46,7 @@ public class GroupServiceImpl implements GroupService{
 
             return ResponseEntity
                     .status(HttpStatus.CREATED)
-                    .body(new ApiResponseDto<>(ApiResponseStatus.SUCCESS.name(),"Grupo criado com sucesso " + group));
+                    .body(new ApiResponseDto<>(ApiResponseStatus.SUCCESS.name(), "Grupo criado com sucesso " + group));
         } catch (Exception e) {
             throw new GroupServiceLogicException(e.getMessage());
         }
@@ -54,26 +54,7 @@ public class GroupServiceImpl implements GroupService{
 
     @Override
     public ResponseEntity<ApiResponseDto<?>> addMember(GroupAddMemberDto groupAddMemberDto) throws GroupNotFoundException, GroupServiceLogicException {
-        if (userRepository.findAllById(groupAddMemberDto.getMembersIds()).isEmpty()) {
-            throw new UserAlreadyExistsException("Usuario não existe");
-        }
-        Optional<Group> optionalGroup = groupRepository.findById(groupAddMemberDto.getGroupId());
-        if (optionalGroup.isEmpty()) {
-            throw new GroupNotFoundException("Group nao existe");
-        }
-        Group group = optionalGroup.get();
-        List<User> membersToAdd = userRepository.findAllById(groupAddMemberDto.getMembersIds());
 
-        switch (groupAddMemberDto.getGroupRole()){
-            case member -> group.getMembers().addAll(membersToAdd);
-            case moderator -> group.getModerators().addAll(membersToAdd);
-            case admin -> group.getAdmins().addAll(membersToAdd);
-            case null, default -> throw new GroupServiceLogicException("Deve ser informado qual o nivel de acesso do grupo");
-        }
-        groupRepository.save(group);
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(new ApiResponseDto<>(ApiResponseStatus.SUCCESS.name(),"Membro adicionado com sucesso " + group));
+        return null;
     }
 }
